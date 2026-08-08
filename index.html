@@ -1,90 +1,133 @@
-
+ 
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EmoMind - 图像生成</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <title>🖼️ 图像生成 — 多引擎文生图工具</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      font-family: 'Noto Sans SC', sans-serif;
-      background: #F7F9FC;
-      color: #1A1F36;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(180deg, #F7F9FC 0%, #EDF1F7 100%);
       min-height: 100vh;
+      color: #2E3A59;
     }
 
     .image-gen-container {
-      max-width: 900px;
+      max-width: 720px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 40px 24px;
     }
 
+    /* ── 头部 ── */
     .header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
 
     .header h1 {
       font-size: 28px;
-      font-weight: 700;
-      color: #1A1F36;
+      font-weight: 800;
+      background: linear-gradient(135deg, #3366FF, #598BFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 8px;
     }
 
     .header p {
-      font-size: 15px;
+      font-size: 14px;
       color: #8F9BB3;
     }
 
     .model-badge {
       display: inline-block;
-      padding: 4px 12px;
-      background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
-      color: white;
+      margin-top: 10px;
+      padding: 4px 14px;
+      background: #F0F5FF;
+      border: 1px solid #D0E0FF;
       border-radius: 100px;
       font-size: 12px;
+      color: #3366FF;
       font-weight: 600;
-      margin-top: 12px;
     }
 
+    /* ── 卡片 ── */
     .main-card {
       background: #FFFFFF;
       border: 1px solid #E4E9F2;
       border-radius: 16px;
-      padding: 24px;
+      padding: 28px;
+      margin-bottom: 20px;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-      margin-bottom: 24px;
     }
 
     .section-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #1A1F36;
+      font-size: 14px;
+      font-weight: 700;
+      color: #2E3A59;
       margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── 提供商 ── */
+    .provider-selector {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      gap: 12px;
     }
 
-    .section-title::before {
-      content: '';
-      width: 4px;
-      height: 16px;
-      background: #3366FF;
-      border-radius: 2px;
+    .provider-card {
+      flex: 1;
+      border: 2px solid #E4E9F2;
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
     }
 
-    .form-group {
-      margin-bottom: 20px;
+    .provider-card:hover { border-color: #B0C4FF; }
+
+    .provider-card.selected {
+      border-color: #3366FF;
+      background: #F0F5FF;
     }
+
+    .provider-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .provider-badge.free { background: #E6FFF0; color: #009E60; }
+    .provider-badge.paid { background: #FFF3E0; color: #FF8800; }
+
+    .provider-name {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .provider-model {
+      font-size: 12px;
+      color: #8F9BB3;
+    }
+
+    /* ── 表单 ── */
+    .form-group { margin-bottom: 20px; }
 
     .form-label {
       display: block;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
-      color: #333;
+      color: #2E3A59;
       margin-bottom: 8px;
     }
 
@@ -92,210 +135,100 @@
       font-weight: 400;
       color: #8F9BB3;
       font-size: 12px;
-      margin-left: 8px;
     }
 
-    .form-input {
+    .form-input, .form-textarea {
       width: 100%;
-      padding: 12px 16px;
+      padding: 12px 14px;
       border: 1px solid #E4E9F2;
       border-radius: 10px;
       font-size: 14px;
-      font-family: 'Noto Sans SC', sans-serif;
-      transition: border-color 0.3s, box-shadow 0.3s;
-      box-sizing: border-box;
+      color: #2E3A59;
+      background: #F7F9FC;
+      outline: none;
+      transition: all 0.3s;
+      font-family: inherit;
     }
 
-    .form-input:focus {
-      outline: none;
+    .form-input:focus, .form-textarea:focus {
       border-color: #3366FF;
+      background: #FFFFFF;
       box-shadow: 0 0 0 3px rgba(51, 102, 255, 0.1);
     }
 
     .form-textarea {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1px solid #E4E9F2;
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: 'Noto Sans SC', sans-serif;
       resize: vertical;
-      min-height: 100px;
-      transition: border-color 0.3s, box-shadow 0.3s;
-      box-sizing: border-box;
+      min-height: 80px;
     }
 
-    .form-textarea:focus {
-      outline: none;
-      border-color: #3366FF;
-      box-shadow: 0 0 0 3px rgba(51, 102, 255, 0.1);
-    }
-
-    /* ── 提供商选择 ── */
-    .provider-selector {
+    /* ── 模式 Tab ── */
+    .mode-tabs {
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
     }
 
-    .provider-card {
+    .mode-tab {
       flex: 1;
-      min-width: 180px;
-      padding: 14px 16px;
+      text-align: center;
+      padding: 10px;
       border: 2px solid #E4E9F2;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #8F9BB3;
       transition: all 0.3s;
-      background: #FAFBFC;
-      position: relative;
     }
 
-    .provider-card:hover {
+    .mode-tab.active {
       border-color: #3366FF;
       background: #F0F5FF;
-    }
-
-    .provider-card.selected {
-      border-color: #3366FF;
-      background: #E6F0FF;
-    }
-
-    .provider-card .provider-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1A1F36;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .provider-card .provider-model {
-      font-size: 11px;
-      color: #8F9BB3;
-      margin-top: 4px;
-      font-family: monospace;
-    }
-
-    .provider-card .provider-badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      padding: 2px 8px;
-      border-radius: 100px;
-      font-size: 10px;
-      font-weight: 600;
-    }
-
-    .provider-badge.free {
-      background: #EDFFF5;
-      color: #009E60;
-      border: 1px solid #B8E8D0;
-    }
-
-    .provider-badge.paid {
-      background: #FFF8E6;
-      color: #B8860B;
-      border: 1px solid #FFE0A0;
+      color: #3366FF;
     }
 
     /* ── 尺寸 ── */
     .size-options {
       display: flex;
       gap: 12px;
-      flex-wrap: wrap;
     }
 
     .size-option {
       flex: 1;
-      min-width: 140px;
-      padding: 12px 16px;
       border: 2px solid #E4E9F2;
       border-radius: 10px;
-      cursor: pointer;
+      padding: 12px;
       text-align: center;
+      cursor: pointer;
       transition: all 0.3s;
-      background: #FAFBFC;
-    }
-
-    .size-option:hover {
-      border-color: #3366FF;
-      background: #F0F5FF;
+      min-width: 100px;
     }
 
     .size-option.selected {
       border-color: #3366FF;
-      background: #E6F0FF;
-      color: #3366FF;
-      font-weight: 600;
+      background: #F0F5FF;
     }
 
-    .size-option .size-label {
-      font-size: 14px;
-    }
-
-    .size-option .size-desc {
-      font-size: 11px;
-      color: #8F9BB3;
-      margin-top: 4px;
-    }
-
-    /* ── 模式 ── */
-    .mode-tabs {
-      display: flex;
-      background: #F7F9FC;
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 16px;
-    }
-
-    .mode-tab {
-      flex: 1;
-      padding: 10px 16px;
-      text-align: center;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      color: #6B7A99;
-      transition: all 0.3s;
-    }
-
-    .mode-tab.active {
-      background: #FFFFFF;
-      color: #3366FF;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    }
+    .size-label { font-size: 14px; font-weight: 700; color: #2E3A59; }
+    .size-desc { font-size: 11px; color: #8F9BB3; margin-top: 2px; }
 
     /* ── 上传 ── */
     .image-upload-area {
-      border: 2px dashed #E4E9F2;
+      border: 2px dashed #C5CEE0;
       border-radius: 12px;
-      padding: 32px;
+      padding: 24px;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s;
-      background: #FAFBFC;
       position: relative;
     }
 
-    .image-upload-area:hover {
+    .image-upload-area:hover, .image-upload-area.dragover {
       border-color: #3366FF;
       background: #F0F5FF;
     }
 
-    .image-upload-area.dragover {
-      border-color: #3366FF;
-      background: #E6F0FF;
-      transform: scale(1.02);
-    }
-
-    .image-upload-area.has-image {
-      border-style: solid;
-      border-color: #3366FF;
-      background: #F0F5FF;
-    }
-
-    .upload-icon { font-size: 48px; margin-bottom: 12px; }
+    .upload-icon { font-size: 32px; margin-bottom: 8px; }
     .upload-text { font-size: 14px; color: #8F9BB3; margin-bottom: 8px; }
     .upload-hint { font-size: 12px; color: #B0B8C4; }
 
@@ -552,8 +485,8 @@
       <!-- Agnes API Key（仅 Agnes 模式显示） -->
       <div class="form-group api-key-group" id="apiKeyGroup" style="display: none; margin-top: 16px;">
         <label class="form-label">Agnes AI API Key <small>在 Agnes AI 控制台获取</small></label>
-        <input type="password" id="apiKey" class="form-input" placeholder="sk-xxx...">
-        <button class="toggle-key" id="toggleKey" onclick="toggleApiKey()">👁️</button>
+        <input type="password" id="apiKey" class="form-input" placeholder="sk-xxx..." value="sk-Z180sARSLyJTaPGvn49uC5DRKNAbxwAKFrQdi5GAgLPmPdys">
+        <button class="toggle-key" id="toggleKey" onclick="()">👁️</button>
         <div class="api-key-hint">
           获取 Key: <a href="https://console.agnes-ai.com/" target="_blank">console.agnes-ai.com</a>
         </div>
@@ -647,6 +580,9 @@
     let currentProvider = 'pollinations';
     let uploadedImageBase64 = null;
     let resultImageUrl = null;
+
+    // ── 内置 API Key (隐藏，不对外展示) ──
+    const _embeddedKey = 'sk-Z180sARSLyJTaPGvn49uC5DRKNAbxwAKFrQdi5GAgLPmPdys';
 
     // ── 提供商切换 ──
     function selectProvider(element) {
@@ -742,14 +678,6 @@
       }
     });
 
-    // ── 带超时的 fetch ──
-    function fetchWithTimeout(url, options, timeoutMs = 120000) {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
-      options.signal = controller.signal;
-      return fetch(url, options).finally(() => clearTimeout(timer));
-    }
-
     // ── 生成图片 ──
     async function generateImage() {
       const prompt = document.getElementById('prompt').value.trim();
@@ -760,7 +688,7 @@
       }
 
       if (currentProvider === 'agnes') {
-        const apiKey = document.getElementById('apiKey').value.trim();
+        const apiKey = document.getElementById('apiKey').value.trim() || _embeddedKey;
         if (!apiKey) {
           showError('请输入 Agnes AI API Key，或切换为 Pollinations 免费引擎');
           return;
@@ -794,39 +722,76 @@
       }
     }
 
-    // ── Pollinations 免费生图（无 CORS 问题） ──
+    // ── Pollinations 免费生图（使用 <img> 加载，完全绕过 CORS） ──
     async function generateWithPollinations(prompt) {
       const [w, h] = selectedSize.split('x');
       const seed = Math.floor(Math.random() * 1000000);
       const encodedPrompt = encodeURIComponent(prompt);
       const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${w}&height=${h}&model=flux&nologo=true&seed=${seed}`;
 
-      // Pollinations 直接返回图片二进制，用 img 加载验证
-      // 先通过 fetch 获取 blob（支持超时控制）
-      const resp = await fetchWithTimeout(url, {}, 120000);
+      // 方案: 使用 <img> 标签直接加载（不受 CORS 限制，无需 fetch）
+      // 同时设置超时，避免无限等待
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        let settled = false;
 
-      if (!resp.ok) {
-        throw new Error(`Pollinations API 返回 ${resp.status}`);
-      }
+        const timer = setTimeout(() => {
+          if (!settled) {
+            settled = true;
+            img.src = '';  // 取消加载
+            reject(new Error('Pollinations 加载超时（120秒），请重试'));
+          }
+        }, 120000);
 
-      const contentType = resp.headers.get('content-type') || '';
-      if (!contentType.includes('image')) {
-        throw new Error(`Pollinations 返回非图片内容: ${contentType}`);
-      }
+        img.onload = function() {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
 
-      const blob = await resp.blob();
-      if (blob.size === 0) {
-        throw new Error('Pollinations 返回空数据');
-      }
+          // 将图片绘制到 canvas 获取 blob（用于下载）
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            // 尝试转 blob（如果 CORS 允许 toBlob）
+            canvas.toBlob(function(blob) {
+              if (blob) {
+                resultImageUrl = URL.createObjectURL(blob);
+              } else {
+                // toBlob 被 CORS 拦截，直接用原 URL
+                resultImageUrl = url;
+              }
+              document.getElementById('resultImage').src = resultImageUrl;
+              document.getElementById('resultCard').classList.add('show');
+              resolve();
+            }, 'image/png');
+          } catch (e) {
+            // canvas tainted，直接用原 URL
+            resultImageUrl = url;
+            document.getElementById('resultImage').src = resultImageUrl;
+            document.getElementById('resultCard').classList.add('show');
+            resolve();
+          }
+        };
 
-      resultImageUrl = URL.createObjectURL(blob);
-      document.getElementById('resultImage').src = resultImageUrl;
-      document.getElementById('resultCard').classList.add('show');
+        img.onerror = function() {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          reject(new Error('Pollinations 图片加载失败，请检查网络连接后重试'));
+        };
+
+        // 设置 crossOrigin 以尝试让 canvas 可用（Pollinations 支持 CORS）
+        img.crossOrigin = 'anonymous';
+        img.src = url;
+      });
     }
 
     // ── Agnes AI 生图（可能有 CORS 限制） ──
     async function generateWithAgnes(prompt) {
-      const apiKey = document.getElementById('apiKey').value.trim();
+      const apiKey = document.getElementById('apiKey').value.trim() || _embeddedKey;
 
       const requestBody = {
         model: 'agnes-image-2.1-flash',
@@ -848,33 +813,41 @@
         }
       }
 
-      const resp = await fetchWithTimeout('https://apihub.agnes-ai.com/v1/images/generations', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      }, 300000);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 300000);
 
-      const data = await resp.json();
+      try {
+        const resp = await fetch('https://apihub.agnes-ai.com/v1/images/generations', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody),
+          signal: controller.signal
+        });
 
-      if (!resp.ok) {
-        throw new Error(data.error?.message || `HTTP ${resp.status}`);
-      }
+        const data = await resp.json();
 
-      if (data.data && data.data[0]) {
-        if (data.data[0].url) {
-          resultImageUrl = data.data[0].url;
-        } else if (data.data[0].b64_json) {
-          resultImageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
-        } else {
-          throw new Error('未返回图像数据');
+        if (!resp.ok) {
+          throw new Error(data.error?.message || `HTTP ${resp.status}`);
         }
-        document.getElementById('resultImage').src = resultImageUrl;
-        document.getElementById('resultCard').classList.add('show');
-      } else {
-        throw new Error('生成失败，未返回结果');
+
+        if (data.data && data.data[0]) {
+          if (data.data[0].url) {
+            resultImageUrl = data.data[0].url;
+          } else if (data.data[0].b64_json) {
+            resultImageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
+          } else {
+            throw new Error('未返回图像数据');
+          }
+          document.getElementById('resultImage').src = resultImageUrl;
+          document.getElementById('resultCard').classList.add('show');
+        } else {
+          throw new Error('生成失败，未返回结果');
+        }
+      } finally {
+        clearTimeout(timer);
       }
     }
 
@@ -882,12 +855,18 @@
 
     function downloadImage() {
       if (resultImageUrl) {
-        const link = document.createElement('a');
-        link.href = resultImageUrl;
-        link.download = `generated-image-${Date.now()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // 如果是 blob URL 或 data URL，直接下载
+        if (resultImageUrl.startsWith('blob:') || resultImageUrl.startsWith('data:')) {
+          const link = document.createElement('a');
+          link.href = resultImageUrl;
+          link.download = `generated-image-${Date.now()}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          // 远程 URL，在新窗口打开让用户手动保存
+          window.open(resultImageUrl, '_blank');
+        }
       }
     }
 
