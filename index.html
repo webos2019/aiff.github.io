@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -5,8 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EmoMind - 图像生成</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: #F7F9FC;
+      color: #1A1F36;
+      min-height: 100vh;
+    }
+
     .image-gen-container {
       max-width: 900px;
       margin: 0 auto;
@@ -123,6 +131,74 @@
       box-shadow: 0 0 0 3px rgba(51, 102, 255, 0.1);
     }
 
+    /* ── 提供商选择 ── */
+    .provider-selector {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .provider-card {
+      flex: 1;
+      min-width: 180px;
+      padding: 14px 16px;
+      border: 2px solid #E4E9F2;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #FAFBFC;
+      position: relative;
+    }
+
+    .provider-card:hover {
+      border-color: #3366FF;
+      background: #F0F5FF;
+    }
+
+    .provider-card.selected {
+      border-color: #3366FF;
+      background: #E6F0FF;
+    }
+
+    .provider-card .provider-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1A1F36;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .provider-card .provider-model {
+      font-size: 11px;
+      color: #8F9BB3;
+      margin-top: 4px;
+      font-family: monospace;
+    }
+
+    .provider-card .provider-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .provider-badge.free {
+      background: #EDFFF5;
+      color: #009E60;
+      border: 1px solid #B8E8D0;
+    }
+
+    .provider-badge.paid {
+      background: #FFF8E6;
+      color: #B8860B;
+      border: 1px solid #FFE0A0;
+    }
+
+    /* ── 尺寸 ── */
     .size-options {
       display: flex;
       gap: 12px;
@@ -163,6 +239,7 @@
       margin-top: 4px;
     }
 
+    /* ── 模式 ── */
     .mode-tabs {
       display: flex;
       background: #F7F9FC;
@@ -189,6 +266,7 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
+    /* ── 上传 ── */
     .image-upload-area {
       border: 2px dashed #E4E9F2;
       border-radius: 12px;
@@ -217,21 +295,9 @@
       background: #F0F5FF;
     }
 
-    .upload-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-    }
-
-    .upload-text {
-      font-size: 14px;
-      color: #8F9BB3;
-      margin-bottom: 8px;
-    }
-
-    .upload-hint {
-      font-size: 12px;
-      color: #B0B8C4;
-    }
+    .upload-icon { font-size: 48px; margin-bottom: 12px; }
+    .upload-text { font-size: 14px; color: #8F9BB3; margin-bottom: 8px; }
+    .upload-hint { font-size: 12px; color: #B0B8C4; }
 
     #uploadedImage {
       max-width: 100%;
@@ -241,13 +307,8 @@
       margin: 0 auto;
     }
 
-    .image-upload-area.has-image .upload-content {
-      display: none;
-    }
-
-    .image-upload-area.has-image #uploadedImage {
-      display: block;
-    }
+    .image-upload-area.has-image .upload-content { display: none; }
+    .image-upload-area.has-image #uploadedImage { display: block; }
 
     .remove-image-btn {
       display: none;
@@ -266,14 +327,10 @@
       transition: background 0.3s;
     }
 
-    .remove-image-btn:hover {
-      background: #FF3D71;
-    }
+    .remove-image-btn:hover { background: #FF3D71; }
+    .image-upload-area.has-image .remove-image-btn { display: block; }
 
-    .image-upload-area.has-image .remove-image-btn {
-      display: block;
-    }
-
+    /* ── 按钮 ── */
     .generate-btn {
       width: 100%;
       padding: 14px 24px;
@@ -292,7 +349,7 @@
       box-shadow: 0 4px 16px rgba(51, 102, 255, 0.3);
     }
 
-    .generate-btn:hover {
+    .generate-btn:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 6px 24px rgba(51, 102, 255, 0.4);
     }
@@ -313,10 +370,9 @@
       animation: spin 0.8s linear infinite;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ── 结果 ── */
     .result-card {
       background: #FFFFFF;
       border: 1px solid #E4E9F2;
@@ -326,9 +382,7 @@
       display: none;
     }
 
-    .result-card.show {
-      display: block;
-    }
+    .result-card.show { display: block; }
 
     .result-image-container {
       text-align: center;
@@ -380,6 +434,7 @@
       border-color: #2952CC;
     }
 
+    /* ── 消息 ── */
     .error-message {
       background: #FFF2F2;
       border: 1px solid #FFE0E0;
@@ -391,9 +446,7 @@
       display: none;
     }
 
-    .error-message.show {
-      display: block;
-    }
+    .error-message.show { display: block; }
 
     .quick-prompts {
       display: flex;
@@ -434,26 +487,41 @@
       font-size: 14px;
     }
 
-    .api-key-group .toggle-key:hover {
-      color: #3366FF;
+    .api-key-group .toggle-key:hover { color: #3366FF; }
+
+    .api-key-hint {
+      font-size: 12px;
+      color: #8F9BB3;
+      margin-top: 6px;
     }
 
+    .api-key-hint a {
+      color: #3366FF;
+      text-decoration: none;
+    }
+
+    .api-key-hint a:hover { text-decoration: underline; }
+
+    .cors-notice {
+      background: #FFF8E6;
+      border: 1px solid #FFE0A0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #B8860B;
+      margin-top: 12px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .cors-notice.show { display: block; }
+
     @media (max-width: 600px) {
-      .image-gen-container {
-        padding: 24px 16px;
-      }
-
-      .main-card {
-        padding: 16px;
-      }
-
-      .size-options {
-        flex-direction: column;
-      }
-
-      .size-option {
-        min-width: 100%;
-      }
+      .image-gen-container { padding: 24px 16px; }
+      .main-card { padding: 16px; }
+      .size-options { flex-direction: column; }
+      .size-option { min-width: 100%; }
+      .provider-selector { flex-direction: column; }
     }
   </style>
 </head>
@@ -461,24 +529,46 @@
   <div class="image-gen-container">
     <div class="header">
       <h1>🖼️ 图像生成</h1>
-      <p>基于 Agnes-Image-2.0-Flash 模型的文生图与图生图工具</p>
-      <span class="model-badge">Agnes-Image-2.0-Flash</span>
+      <p>多引擎文生图与图生图工具，支持免费提供商</p>
+      <span class="model-badge" id="modelBadge">Flux (Pollinations 免费)</span>
     </div>
 
+    <!-- 提供商选择 -->
     <div class="main-card">
-      <div class="section-title">API 配置</div>
-      <div class="form-group api-key-group">
-        <label class="form-label">API Key <small>在 Agnes AI 控制台获取</small></label>
+      <div class="section-title">选择生图引擎</div>
+      <div class="provider-selector">
+        <div class="provider-card selected" data-provider="pollinations" onclick="selectProvider(this)">
+          <span class="provider-badge free">免费</span>
+          <div class="provider-name">🎁 Pollinations</div>
+          <div class="provider-model">flux — 无需 API Key</div>
+        </div>
+        <div class="provider-card" data-provider="agnes" onclick="selectProvider(this)">
+          <span class="provider-badge paid">付费</span>
+          <div class="provider-name">🎨 Agnes AI</div>
+          <div class="provider-model">agnes-image-2.1-flash</div>
+        </div>
+      </div>
+
+      <!-- Agnes API Key（仅 Agnes 模式显示） -->
+      <div class="form-group api-key-group" id="apiKeyGroup" style="display: none; margin-top: 16px;">
+        <label class="form-label">Agnes AI API Key <small>在 Agnes AI 控制台获取</small></label>
         <input type="password" id="apiKey" class="form-input" placeholder="sk-xxx...">
         <button class="toggle-key" id="toggleKey" onclick="toggleApiKey()">👁️</button>
+        <div class="api-key-hint">
+          获取 Key: <a href="https://console.agnes-ai.com/" target="_blank">console.agnes-ai.com</a>
+        </div>
+        <div class="cors-notice show" id="corsNotice">
+          ⚠️ 注意: 浏览器直接调用 Agnes AI API 可能遇到 CORS 跨域限制。如果报错，建议使用 Pollinations 免费引擎（无 CORS 问题），或通过后端代理调用。
+        </div>
       </div>
     </div>
 
+    <!-- 生成配置 -->
     <div class="main-card">
       <div class="section-title">生成模式</div>
       <div class="mode-tabs">
-        <div class="mode-tab active" onclick="switchMode('text')">📝 文生图</div>
-        <div class="mode-tab" onclick="switchMode('image')">🖼️ 图生图</div>
+        <div class="mode-tab active" onclick="switchMode('text', event)">📝 文生图</div>
+        <div class="mode-tab" onclick="switchMode('image', event)">🖼️ 图生图</div>
       </div>
 
       <div class="form-group">
@@ -491,6 +581,8 @@
           <span class="quick-prompt" onclick="setPrompt('A professional portrait of a young woman, soft studio lighting')">👩 人像写真</span>
           <span class="quick-prompt" onclick="setPrompt('A delicious sushi platter, food photography, high detail')">🍣 美食摄影</span>
           <span class="quick-prompt" onclick="setPrompt('A fantasy castle in the clouds, magical atmosphere')">🏰 梦幻城堡</span>
+          <span class="quick-prompt" onclick="setPrompt('一只可爱的橘猫坐在窗台上，阳光洒落，水彩画风格')">🐱 水彩橘猫</span>
+          <span class="quick-prompt" onclick="setPrompt('中国山水画，云雾缭绕，远山近水，水墨风格')">🏔️ 水墨山水</span>
         </div>
       </div>
 
@@ -514,13 +606,13 @@
       <div class="form-group">
         <label class="form-label">图像尺寸</label>
         <div class="size-options">
-          <div class="size-option selected" data-size="1024x768" onclick="selectSize(this)">
-            <div class="size-label">1024 × 768</div>
-            <div class="size-desc">横版</div>
-          </div>
-          <div class="size-option" data-size="1024x1024" onclick="selectSize(this)">
+          <div class="size-option selected" data-size="1024x1024" onclick="selectSize(this)">
             <div class="size-label">1024 × 1024</div>
             <div class="size-desc">正方形</div>
+          </div>
+          <div class="size-option" data-size="1024x768" onclick="selectSize(this)">
+            <div class="size-label">1024 × 768</div>
+            <div class="size-desc">横版</div>
           </div>
           <div class="size-option" data-size="768x1024" onclick="selectSize(this)">
             <div class="size-label">768 × 1024</div>
@@ -551,9 +643,28 @@
 
   <script>
     let currentMode = 'text';
-    let selectedSize = '1024x768';
+    let selectedSize = '1024x1024';
+    let currentProvider = 'pollinations';
     let uploadedImageBase64 = null;
     let resultImageUrl = null;
+
+    // ── 提供商切换 ──
+    function selectProvider(element) {
+      document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
+      currentProvider = element.dataset.provider;
+
+      const apiKeyGroup = document.getElementById('apiKeyGroup');
+      const modelBadge = document.getElementById('modelBadge');
+
+      if (currentProvider === 'agnes') {
+        apiKeyGroup.style.display = 'block';
+        modelBadge.textContent = 'Agnes-Image-2.1-Flash';
+      } else {
+        apiKeyGroup.style.display = 'none';
+        modelBadge.textContent = 'Flux (Pollinations 免费)';
+      }
+    }
 
     function toggleApiKey() {
       const input = document.getElementById('apiKey');
@@ -567,25 +678,17 @@
       }
     }
 
-    function switchMode(mode) {
+    function switchMode(mode, e) {
       currentMode = mode;
-      document.querySelectorAll('.mode-tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      event.target.classList.add('active');
+      document.querySelectorAll('.mode-tab').forEach(tab => tab.classList.remove('active'));
+      e.target.classList.add('active');
 
       const uploadSection = document.getElementById('imageUploadSection');
-      if (mode === 'image') {
-        uploadSection.style.display = 'block';
-      } else {
-        uploadSection.style.display = 'none';
-      }
+      uploadSection.style.display = mode === 'image' ? 'block' : 'none';
     }
 
     function selectSize(element) {
-      document.querySelectorAll('.size-option').forEach(opt => {
-        opt.classList.remove('selected');
-      });
+      document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
       element.classList.add('selected');
       selectedSize = element.dataset.size;
     }
@@ -594,6 +697,7 @@
       document.getElementById('prompt').value = text;
     }
 
+    // ── 图片上传 ──
     function handleImageUpload(input) {
       if (input.files && input.files[0]) {
         const file = input.files[0];
@@ -601,7 +705,6 @@
           showError('图像大小不能超过 10MB');
           return;
         }
-
         const reader = new FileReader();
         reader.onload = function(e) {
           uploadedImageBase64 = e.target.result;
@@ -625,12 +728,10 @@
       e.preventDefault();
       this.classList.add('dragover');
     });
-
     document.getElementById('uploadArea').addEventListener('dragleave', function(e) {
       e.preventDefault();
       this.classList.remove('dragover');
     });
-
     document.getElementById('uploadArea').addEventListener('drop', function(e) {
       e.preventDefault();
       this.classList.remove('dragover');
@@ -641,18 +742,29 @@
       }
     });
 
-    async function generateImage() {
-      const apiKey = document.getElementById('apiKey').value.trim();
-      const prompt = document.getElementById('prompt').value.trim();
+    // ── 带超时的 fetch ──
+    function fetchWithTimeout(url, options, timeoutMs = 120000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      options.signal = controller.signal;
+      return fetch(url, options).finally(() => clearTimeout(timer));
+    }
 
-      if (!apiKey) {
-        showError('请输入 API Key');
-        return;
-      }
+    // ── 生成图片 ──
+    async function generateImage() {
+      const prompt = document.getElementById('prompt').value.trim();
 
       if (!prompt) {
         showError('请输入提示词');
         return;
+      }
+
+      if (currentProvider === 'agnes') {
+        const apiKey = document.getElementById('apiKey').value.trim();
+        if (!apiKey) {
+          showError('请输入 Agnes AI API Key，或切换为 Pollinations 免费引擎');
+          return;
+        }
       }
 
       const btn = document.getElementById('generateBtn');
@@ -660,6 +772,61 @@
       btn.innerHTML = '<span class="spinner"></span><span>正在生成中...</span>';
       hideError();
       document.getElementById('resultCard').classList.remove('show');
+
+      try {
+        if (currentProvider === 'pollinations') {
+          await generateWithPollinations(prompt);
+        } else {
+          await generateWithAgnes(prompt);
+        }
+      } catch (error) {
+        console.error('生成错误:', error);
+        let msg = error.message || '未知错误';
+        if (error.name === 'AbortError') {
+          msg = '请求超时（120秒），请重试或切换为 Pollinations 免费引擎';
+        } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+          msg = '网络请求失败，可能是 CORS 跨域限制。建议切换为 Pollinations 免费引擎（无 CORS 问题）';
+        }
+        showError('生成失败: ' + msg);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🚀 开始生成</span>';
+      }
+    }
+
+    // ── Pollinations 免费生图（无 CORS 问题） ──
+    async function generateWithPollinations(prompt) {
+      const [w, h] = selectedSize.split('x');
+      const seed = Math.floor(Math.random() * 1000000);
+      const encodedPrompt = encodeURIComponent(prompt);
+      const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${w}&height=${h}&model=flux&nologo=true&seed=${seed}`;
+
+      // Pollinations 直接返回图片二进制，用 img 加载验证
+      // 先通过 fetch 获取 blob（支持超时控制）
+      const resp = await fetchWithTimeout(url, {}, 120000);
+
+      if (!resp.ok) {
+        throw new Error(`Pollinations API 返回 ${resp.status}`);
+      }
+
+      const contentType = resp.headers.get('content-type') || '';
+      if (!contentType.includes('image')) {
+        throw new Error(`Pollinations 返回非图片内容: ${contentType}`);
+      }
+
+      const blob = await resp.blob();
+      if (blob.size === 0) {
+        throw new Error('Pollinations 返回空数据');
+      }
+
+      resultImageUrl = URL.createObjectURL(blob);
+      document.getElementById('resultImage').src = resultImageUrl;
+      document.getElementById('resultCard').classList.add('show');
+    }
+
+    // ── Agnes AI 生图（可能有 CORS 限制） ──
+    async function generateWithAgnes(prompt) {
+      const apiKey = document.getElementById('apiKey').value.trim();
 
       const requestBody = {
         model: 'agnes-image-2.1-flash',
@@ -677,57 +844,41 @@
         } else if (uploadedImageBase64) {
           requestBody.image = [uploadedImageBase64];
         } else {
-          btn.disabled = false;
-          btn.innerHTML = '<span>🚀 开始生成</span>';
-          showError('图生图模式请上传图像或输入图像URL');
-          return;
+          throw new Error('图生图模式请上传图像或输入图像URL');
         }
       }
 
-      try {
-        const response = await fetch('https://apihub.agnes-ai.com/v1/images/generations', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestBody),
-          timeout: 300000
-        });
+      const resp = await fetchWithTimeout('https://apihub.agnes-ai.com/v1/images/generations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      }, 300000);
 
-        const data = await response.json();
+      const data = await resp.json();
 
-        if (!response.ok) {
-          throw new Error(data.error?.message || '生成失败');
-        }
+      if (!resp.ok) {
+        throw new Error(data.error?.message || `HTTP ${resp.status}`);
+      }
 
-        if (data.data && data.data[0]) {
+      if (data.data && data.data[0]) {
+        if (data.data[0].url) {
           resultImageUrl = data.data[0].url;
-          if (resultImageUrl) {
-            document.getElementById('resultImage').src = resultImageUrl;
-            document.getElementById('resultCard').classList.add('show');
-          } else if (data.data[0].b64_json) {
-            resultImageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
-            document.getElementById('resultImage').src = resultImageUrl;
-            document.getElementById('resultCard').classList.add('show');
-          } else {
-            showError('未返回图像数据');
-          }
+        } else if (data.data[0].b64_json) {
+          resultImageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
         } else {
-          showError('生成失败，未返回结果');
+          throw new Error('未返回图像数据');
         }
-      } catch (error) {
-        console.error('生成错误:', error);
-        showError('生成失败: ' + error.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<span>🚀 开始生成</span>';
+        document.getElementById('resultImage').src = resultImageUrl;
+        document.getElementById('resultCard').classList.add('show');
+      } else {
+        throw new Error('生成失败，未返回结果');
       }
     }
 
-    function regenerateImage() {
-      generateImage();
-    }
+    function regenerateImage() { generateImage(); }
 
     function downloadImage() {
       if (resultImageUrl) {
@@ -753,6 +904,9 @@
     function showError(message) {
       const errorDiv = document.getElementById('errorMessage');
       errorDiv.textContent = message;
+      errorDiv.style.background = '#FFF2F2';
+      errorDiv.style.borderColor = '#FFE0E0';
+      errorDiv.style.color = '#FF3D71';
       errorDiv.classList.add('show');
     }
 
